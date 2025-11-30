@@ -1203,6 +1203,32 @@ mvn test
 
 ---
 
+## 🤖 AI & Machine Learning Applications
+
+SMPStats data is ideal for building advanced AI/ML applications. While these are implemented as **external tools** consuming the API (not part of the core plugin), the roadmap ensures the API provides all necessary data.
+
+### Supported Use Cases
+
+| Application | Required Data | API Endpoints | Status |
+|-------------|---------------|---------------|--------|
+| **Structure Classification** | 3D spatial data | `/heatmap/*` | ✅ Ready |
+| **Action Prediction** | Time-series events | `/moments/*`, `/timeline/*` | ✅ Ready |
+| **Wiki Generation** | Events + Social | `/moments/*`, `/social/*` | ✅ Ready |
+| **Desire Path Analysis** | Movement patterns | `/heatmap/POSITION` | ✅ Ready |
+
+### Future API Enhancements for AI
+
+| Enhancement | Milestone | Purpose |
+|-------------|-----------|---------|
+| Raw event storage | M5 | Higher resolution data for training |
+| Block-level coordinates | M5 | Precise 3D structure data |
+| Event sequences API | M4 | Optimized time-series queries |
+| Player behavior profiles | M3 | Pre-computed behavioral features |
+
+**Full guide with Python examples:** [docs/AI_ML_INTEGRATION.md](docs/AI_ML_INTEGRATION.md)
+
+---
+
 ## 🌟 Success Metrics
 
 ### Milestone 2 (Analytics Layer)
