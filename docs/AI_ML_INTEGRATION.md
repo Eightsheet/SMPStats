@@ -393,11 +393,11 @@ class ActionPredictor(nn.Module):
 
 ### Step 5: Prediction & Alerts
 
+```python
 # Constants for model configuration
 SEQ_LENGTH = 30  # Number of actions to use as input
 PREDICTION_LENGTH = 10  # Number of actions to predict
 
-```python
 def predict_next_actions(model, recent_actions, num_predictions=PREDICTION_LENGTH):
     """Predict what the player will do next."""
     model.eval()
