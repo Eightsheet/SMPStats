@@ -393,17 +393,21 @@ class ActionPredictor(nn.Module):
 
 ### Step 5: Prediction & Alerts
 
+# Constants for model configuration
+SEQ_LENGTH = 30  # Number of actions to use as input
+PREDICTION_LENGTH = 10  # Number of actions to predict
+
 ```python
-def predict_next_actions(model, recent_actions, num_predictions=10):
+def predict_next_actions(model, recent_actions, num_predictions=PREDICTION_LENGTH):
     """Predict what the player will do next."""
     model.eval()
     
     # Tokenize and prepare input
     tokens = tokenize_moments(recent_actions)
-    if len(tokens) < 30:
-        tokens = [0] * (30 - len(tokens)) + tokens  # Pad
+    if len(tokens) < SEQ_LENGTH:
+        tokens = [0] * (SEQ_LENGTH - len(tokens)) + tokens  # Pad
     
-    input_tensor = torch.tensor(tokens[-30:]).unsqueeze(0)
+    input_tensor = torch.tensor(tokens[-SEQ_LENGTH:]).unsqueeze(0)
     
     with torch.no_grad():
         output = model(input_tensor)
@@ -594,6 +598,7 @@ Write an engaging wiki article about this event. Include:
 Article:"""
 
     # For local inference
+    # Note: In production, consider initializing the pipeline once and reusing it
     generator = pipeline("text-generation", model=model_name, max_length=500)
     result = generator(prompt)[0]["generated_text"]
     
@@ -601,10 +606,10 @@ Article:"""
 
 # For OpenAI API
 def generate_with_openai(context, api_key):
-    """Generate using OpenAI API."""
-    import openai
+    """Generate using OpenAI API (modern client library)."""
+    from openai import OpenAI
     
-    openai.api_key = api_key
+    client = OpenAI(api_key=api_key)
     
     system_prompt = "You are a historian for a Minecraft server, writing engaging wiki articles."
     user_prompt = f"""Write a wiki article about this event:
@@ -616,7 +621,7 @@ Event Types: {context['moment_types']}
 
 Write in an epic, narrative style. Include a title, participant list, and description."""
 
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": system_prompt},
@@ -836,7 +841,7 @@ def visualize_desire_paths(heatmap_df, recommendations, output_path="desire_path
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
     print(f"Visualization saved to {output_path}")
 
-def generate_recommendations(analysis_result):
+def generate_recommendations(analysis_result, grid_size=8):
     """Generate infrastructure recommendations."""
     
     recommendations = []
@@ -847,7 +852,7 @@ def generate_recommendations(analysis_result):
     for node, traffic in uncovered[:5]:
         x, z = node
         rec = {
-            "location": {"x": x * 8, "z": z * 8},  # Convert back to world coords
+            "location": {"x": x * grid_size, "z": z * grid_size},  # Convert back to world coords
             "traffic": traffic,
             "suggestion": "Build path or bridge here",
             "priority": "high" if traffic > 500 else "medium"
