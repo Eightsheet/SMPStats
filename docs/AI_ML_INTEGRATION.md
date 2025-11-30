@@ -597,8 +597,10 @@ Write an engaging wiki article about this event. Include:
 
 Article:"""
         
-        result = self.generator(prompt)[0]["generated_text"]
-        return result
+        result = self.generator(prompt)
+        if not result or not result[0].get("generated_text"):
+            return "Error: Failed to generate article"
+        return result[0]["generated_text"]
 
 # Usage: Initialize once, use many times
 # wiki_gen = WikiGenerator("gpt2")
@@ -923,8 +925,9 @@ def weekly_analysis():
     
     # 5. Generate Recommendations
     print("\n💡 Generating recommendations...")
-    # Assume infrastructure_coords is loaded from elsewhere
-    infrastructure = []  # Load from your server data
+    # Load infrastructure coordinates from your server's path/road data
+    # Example: Query your Dynmap data or parse a world map file
+    infrastructure = []  # Replace with: load_infrastructure_from_dynmap() or similar
     analysis = analyze_path_efficiency(graph, infrastructure)
     
     recommendations = generate_recommendations(analysis)
