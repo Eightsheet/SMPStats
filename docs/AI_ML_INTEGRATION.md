@@ -344,7 +344,11 @@ def tokenize_moments(moments):
 ### Step 3: Sequence Preparation
 
 ```python
-def create_sequences(tokens, seq_length=30, prediction_length=10):
+# Constants for model configuration
+SEQ_LENGTH = 30  # Number of actions to use as input
+PREDICTION_LENGTH = 10  # Number of actions to predict
+
+def create_sequences(tokens, seq_length=SEQ_LENGTH, prediction_length=PREDICTION_LENGTH):
     """
     Create training sequences for LSTM.
     
@@ -394,9 +398,7 @@ class ActionPredictor(nn.Module):
 ### Step 5: Prediction & Alerts
 
 ```python
-# Constants for model configuration
-SEQ_LENGTH = 30  # Number of actions to use as input
-PREDICTION_LENGTH = 10  # Number of actions to predict
+# Constants are defined in Step 3 above: SEQ_LENGTH = 30, PREDICTION_LENGTH = 10
 
 def predict_next_actions(model, recent_actions, num_predictions=PREDICTION_LENGTH):
     """Predict what the player will do next."""
@@ -568,18 +570,16 @@ def build_event_context(cluster, social_data, stats):
 ```python
 from transformers import pipeline
 
-def generate_wiki_article(context, model_name="gpt2"):
-    """
-    Generate a wiki article using an LLM.
+class WikiGenerator:
+    """Wiki article generator with cached model pipeline."""
     
-    For production, use a more capable model like:
-    - OpenAI GPT-4 API
-    - Local Llama 3 via Ollama
-    - HuggingFace models
-    """
+    def __init__(self, model_name="gpt2"):
+        """Initialize the generator once and reuse for all articles."""
+        self.generator = pipeline("text-generation", model=model_name, max_length=500)
     
-    # Build the prompt
-    prompt = f"""You are a server historian writing a wiki article about a Minecraft server event.
+    def generate(self, context):
+        """Generate a wiki article using the cached LLM pipeline."""
+        prompt = f"""You are a server historian writing a wiki article about a Minecraft server event.
 
 Event Data:
 - Participants: {', '.join(context['participants'][:5])}
@@ -596,13 +596,14 @@ Write an engaging wiki article about this event. Include:
 4. The outcome and significance
 
 Article:"""
+        
+        result = self.generator(prompt)[0]["generated_text"]
+        return result
 
-    # For local inference
-    # Note: In production, consider initializing the pipeline once and reusing it
-    generator = pipeline("text-generation", model=model_name, max_length=500)
-    result = generator(prompt)[0]["generated_text"]
-    
-    return result
+# Usage: Initialize once, use many times
+# wiki_gen = WikiGenerator("gpt2")
+# article1 = wiki_gen.generate(context1)
+# article2 = wiki_gen.generate(context2)
 
 # For OpenAI API
 def generate_with_openai(context, api_key):
@@ -906,9 +907,10 @@ def weekly_analysis():
     
     # 3. Generate Wiki Articles
     print("\n📝 Generating wiki articles...")
+    wiki_gen = WikiGenerator()  # Initialize once
     for i, cluster in enumerate(clusters[:3]):  # Top 3 events
         event_context = build_event_context(cluster, context['social'], context['stats'])
-        article = generate_wiki_article(event_context)
+        article = wiki_gen.generate(event_context)
         wiki_to_html(article, f"wiki/event_{i+1}.html")
     
     # 4. Analyze Movement Patterns
