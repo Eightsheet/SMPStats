@@ -374,6 +374,21 @@ evtSource.onmessage = (event) => {
 
 ---
 
+## 🤖 AI & Machine Learning Integration
+
+SMPStats data is perfect for advanced analytics and AI applications. The rich spatial, temporal, and behavioral data enables:
+
+| Application | Description | Difficulty |
+|-------------|-------------|------------|
+| **Structure Classification** | Train 3D CNNs to identify player builds (houses, farms, redstone) | ⭐⭐⭐ |
+| **Action Prediction** | Use LSTMs to predict player behavior | ⭐⭐ |
+| **Wiki Generation** | Auto-generate server history with LLMs | ⭐⭐ |
+| **Desire Path Analysis** | Optimize infrastructure based on movement patterns | ⭐ |
+
+**Full guide with Python examples:** [docs/AI_ML_INTEGRATION.md](docs/AI_ML_INTEGRATION.md)
+
+---
+
 ## 🗺️ Roadmap
 
 See [Roadmap.md](Roadmap.md) for the complete development roadmap with detailed milestones, technical specifications, and future plans.
